@@ -3,7 +3,7 @@ VALID_MAPS=$(find map/valid -name "*.ber")
 GREEN='\033[0;32m'
 RED='\033[0;31m'
 
-make re > /dev/null 2>&1
+make > /dev/null 2>&1
 
 echo -e "\n                            MAP TESTER               \n"
 echo -e "Valgrind Test (1)\nInvalid Map Test (2)\nValgrind Valid Map Test (3)\nValid Map Test (4)\nQuit (5)"
@@ -17,9 +17,9 @@ then
 		RESULT=$(cat Valgrind_Result.txt | grep "All heap blocks" | cut -b 11-61)
 		if [ "$RESULT" == "All heap blocks were freed -- no leaks are possible" ]
 		then
-			printf "${GREEN}Map: $map_basename"
+			printf "${GREEN}Map: $map_basename [OK]"
 		else
-			printf "${RED}Map: $map_basename"
+			printf "${RED}Map: $map_basename [KO]"
 		fi
 	done
 	rm Valgrind_Result.txt
@@ -44,9 +44,9 @@ then
 		RESULT=$(cat Valgrind_Result.txt | grep "All heap blocks" | cut -b 11-61)
 		if [ "$RESULT" == "All heap blocks were freed -- no leaks are possible" ]
 		then
-			printf "${GREEN}Map: $map_basename"
+			printf "${GREEN}Map: $map_basename [OK]"
 		else
-			printf "${RED}Map: $map_basename"
+			printf "${RED}Map: $map_basename [KO]"
 		fi
 	done
 	rm Valgrind_Result.txt
