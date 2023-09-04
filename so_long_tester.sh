@@ -56,6 +56,7 @@ then
 	for i in $VALID_MAPS; do
     	echo -e '\n'
 		map_basename="${i##*/}"
+		printf "Map: $map_basename"
     	./so_long $i
 	done
 	make fclean > /dev/null
