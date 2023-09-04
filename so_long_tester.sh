@@ -3,64 +3,50 @@ VALID_MAPS=$(find map/valid -name "*.ber")
 GREEN='\033[0;32m'
 RED='\033[0;31m'
 
-make > /dev/null 2>&1
+make > /dev/null
+clear
 
-echo -e "\n                            MAP TESTER               \n"
-echo -e "Valgrind Test (1)\nInvalid Map Test (2)\nValgrind Valid Map Test (3)\nValid Map Test (4)\nQuit (5)"
+echo -e "\n                                        MAP TESTER               \n"
+echo -e "Test Invalid Maps with Valgrind (Press 1)\nRun Valid Maps with Valgrind (Press 2)\nQuit (Press 3)"
 read input
+if [ -z "$input" ]
+then
+	exit 130
+fi
+printf "\n"
 if [ $input == '1' ]
 then
+	echo -e "Test Invalid Maps with Valgrind:\n"
 	for i in $INVALID_MAPS; do
-    	echo -e '\n'
 		map_basename="${i##*/}"
     	valgrind ./so_long $i &> Valgrind_Result.txt
-		RESULT=$(cat Valgrind_Result.txt | grep "All heap blocks" | cut -b 11-61)
-		if [ "$RESULT" == "All heap blocks were freed -- no leaks are possible" ]
+		PRID=$(expr ${#BASHPID} + 6)
+		RESULT=$(cat Valgrind_Result.txt | grep "All heap blocks" | cut -b $PRID-61)
+		ERROR_RESULT=$(cat Valgrind_Result.txt | grep "Error")
+		if [ "$RESULT" == "All heap blocks were freed -- no leaks are possible" ] && [ "$ERROR_RESULT" == "Error" ]
 		then
-			printf "${GREEN}Map: $map_basename [OK]"
+			printf "${GREEN}[OK] Map: $map_basename\n"
 		else
-			printf "${RED}Map: $map_basename [KO]"
+			printf "${RED}[KO] Map: $map_basename\n"
 		fi
 	done
 	rm Valgrind_Result.txt
-	make fclean > /dev/null
 elif [ $input == '2' ]
 then
-	for i in $INVALID_MAPS; do
-    	echo -e '\n'
-		map_basename="${i##*/}"
-    	./so_long $i &> Map_Error_Message.txt
-		printf "Map: $map_basename\n"
-		cat Map_Error_Message.txt
-	done
-	rm Map_Error_Message.txt
-	make fclean > /dev/null
-elif [ $input == '3' ]
-then
+	echo -e "Run Valid Maps with Valgrind:\n"
 	for i in $VALID_MAPS; do
-    	echo -e '\n'
 		map_basename="${i##*/}"
     	valgrind ./so_long $i &> Valgrind_Result.txt
-		RESULT=$(cat Valgrind_Result.txt | grep "All heap blocks" | cut -b 11-61)
+		PRID=$(expr ${#BASHPID} + 6)
+		RESULT=$(cat Valgrind_Result.txt | grep "All heap blocks" | cut -b $PRID-61)
 		if [ "$RESULT" == "All heap blocks were freed -- no leaks are possible" ]
 		then
-			printf "${GREEN}Map: $map_basename [OK]"
+			printf "${GREEN}[OK] Map: $map_basename\n"
 		else
-			printf "${RED}Map: $map_basename [KO]"
+			printf "${RED}[KO] Map: $map_basename\n"
 		fi
 	done
 	rm Valgrind_Result.txt
-	make fclean > /dev/null
-elif [ $input == '4' ]
-then
-	for i in $VALID_MAPS; do
-    	echo -e '\n'
-		map_basename="${i##*/}"
-		printf "Map: $map_basename"
-    	./so_long $i
-	done
-	make fclean > /dev/null
 else
-	make fclean > /dev/null
 	exit 130
 fi
