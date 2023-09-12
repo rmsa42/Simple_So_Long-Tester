@@ -1,5 +1,7 @@
 INVALID_MAPS=$(find map/invalid -name "*.ber")
 VALID_MAPS=$(find map/valid -name "*.ber")
+touch Valgrind_Result.txt
+VALRESULT=Valgrind_Result.txt
 GREEN='\033[0;32m'
 RED='\033[0;31m'
 
@@ -13,6 +15,7 @@ if [ -z "$input" ]
 then
 	exit 130
 fi
+trap "rm $VALRESULT" EXIT
 printf "\n"
 if [ $input == '1' ]
 then
@@ -30,7 +33,6 @@ then
 			printf "${RED}[KO] Map: $map_basename\n"
 		fi
 	done
-	rm Valgrind_Result.txt
 elif [ $input == '2' ]
 then
 	echo -e "Run Valid Maps with Valgrind:\n"
@@ -46,7 +48,7 @@ then
 			printf "${RED}[KO] Map: $map_basename\n"
 		fi
 	done
-	rm Valgrind_Result.txt
 else
 	exit 130
 fi
+exit 0
